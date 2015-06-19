@@ -10,6 +10,8 @@
 CONF=/etc/ipv6assign.conf
 MYCONF=/tmp/ipv6assign.conf
 IFACE=eth0
+vsec=600
+hsec=300
 
 H=`hostname`
 
@@ -73,9 +75,15 @@ do
 	B="$B `echo $i | cut -f1 -d/`"
 done
 # No! ideally take this route from the top of the range
+N=fd04::
+ula=`ipv6calc --in prefix+mac $N $mac --out ipv6`
+ip -6 addr replace ${ula}/128 dev $IFACE valid_lft $vsec preferred_lft $hsec
+# Now we have to wait a bit
+
 N=`fastestpath $B`
 addme=`ipv6calc --in prefix+mac $N $mac --out ipv6`
-ip -6 addr add ${addme}/128 dev $IFACE
+ip -6 addr replace ${addme}/128 dev $IFACE valid_lft $vsec preferred_lft $hsec
+ip -6 addr del ${ula}/128 dev $IFACE
 
 # then register this darn address somewhere else
 # nsupdate?
