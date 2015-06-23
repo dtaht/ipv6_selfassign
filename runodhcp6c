@@ -1,0 +1,10 @@
+#!/bin/sh
+# example of how to have two simultaneous dhcp-pd cable modem uplinks
+# The only difference between these two scripts is they use a different
+# protocol number to distinguish between routes they inserted to
+# make it easier to keep them up to date and/or flush on exit.
+
+odhcp6c -P 56 -d -s /usr/sbin/odhcp6c-eth2 -d eth2
+odhcp6c -P 56 -d -s /usr/sbin/odhcp6c-update -d eth0
+
+

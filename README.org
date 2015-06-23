@@ -1,0 +1,32 @@
+There was WAY too much magic in hnetd. This is my attempt at reworking
+from the ground up, what I needed to get prefix distribution and basic
+multi-homed ipv6 connectivity to the clients and networks that needed it,
+while being minimally invasive on the rest of the network.
+
+First up - dibbler, isc-dhcp, and wide all had major issues with dhcp-pd.
+The openwrt odhcpd6c code, being battletested in routers, turns out to
+work JUST GREAT on debian systems. It has a few flaws that can be scripted
+around. So here are two scripts (one for each interface) that
+give me two ipv6 enabled uplinks to the internet, and working dhcpv6-pd.
+
+It uses source specific routing to make sure nothing escapes that
+was not intended to, and has been tested on comcast only.
+
+As written, this requires a modern linux 4.1 or later kernel so as to
+do the right thing when no generic ipv6 default route is present.
+Alternatively you can just enable accept_ra for an uplink interface.
+
+Then, in this case, for hosts,
+I have a simple script that monitors what source
+specific gateways are available and gives that box a unique ipv6 addr
+from each range (or from the closest or fastest)
+
+(I have not got around to having it select from the topmost part of the
+ipv6 prefix)
+
+boom, I can backhaul ipv6 to anywhere in my network that is smart
+enough to do this, without any need for weird stuff inbetween, nor
+dhcpv6-pd internally, nor a bunch of other stuff.
+
+Next up is figuring out saner things with dns, and figuring out
+how to get more of my /56 allocation more deep into the network.
